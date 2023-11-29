@@ -47,7 +47,6 @@ function verifyToken(req, res, next) {
     }
 }
 
-/// TODO:
 app.post('/login', (req, res) => {
     // Get Post Values
     const username = req.body["username"].toLowerCase();
@@ -98,59 +97,62 @@ app.post('/signup', (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error creating user', error: error });
         });
-        // If user does not exist, create user
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).json({ message: 'Error creating user', error: error });
     }
 });
 
 
 
-app.post('/GetLists', verifyToken, async (req, res) => {
-    let query = mysql.format("SELECT sl.* FROM `Shopping List` AS sl INNER JOIN `Users` AS u ON sl.`Owner_ID` = u.`ID` WHERE u.`User_Name` = ?;", [req.user.username]);
-    connection.query(query, function (err, result, fields) {
-        if (err) {
-            // Handle the error here, e.g., send a response with an error message
-            console.error("error: ", err);
-            return res.status(500).json({ message: 'Error fetching shopping lists', error: err });
-        }
-        // Assuming you want to send the result as a JSON response
-        res.json(result);
-    });
+app.post('/GetEvent', verifyToken, async (req, res) => {
+    try {
+        let ID = await getIdFromUsername(req.user.username);
+        let listData = await GetListData(ID);
+        return res.status(200).json({ data: listData });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error getting list', error: error });
+    }
+
 });
 
-app.post('/CreateList', verifyToken, async (req, res) => {
-    const name = req.body["listName"];
-    const description = req.body["listDescription"];
-    
-    if(name === "" || description === ""){
-        return res.status(400).json({ message: 'Bad Request, missing list name or description' });
+app.post('/CreateEvent', verifyToken, async (req, res) => {
+    const Date = req.body["Date"];
+    const Activity = req.body["Activity"];
+    const Intensity = req.body["Intensity"];
+    const Length = req.body["Length"];
+    const StartTime = req.body["StartTime"];
+    let ID;
+    if(Date === "" || Activity === "" || Intensity === "" || Length === "" || StartTime === "" || ID === ""){
+        return res.status(400).json({ message: 'Bad Request, missing parameters' });
     }
     
     try {
-        id = await getIdFromUsername(req.user.username);
-        let listId = await CreateList(name, description, id);
-        return res.status(200).json({ message: 'List Created', id: listId });
+        console.log("Username: ", req.user.username)
+        ID = await getIdFromUsername(req.user.username);
+        console.log("ID: ", ID)
+        let listId = await CreateEvent(Date, Activity, Intensity, Length, StartTime, ID);
+        return res.status(200).json({ message: 'Event Created', id: listId });
     } catch (error) {
         console.error("error: ", error);
-        return res.status(500).json({ message: 'Error creating list', error: error });
+        return res.status(500).json({ message: 'Error creating Event', error: error });
     }
 });
 
-/// TODO: Consider, what happens if a valid user sends a request with the list id of another user?
-app.post('/RemoveList', verifyToken, async (req, res) => {
-    
-    const id = req.body["listID"];
-    if(id === ""){
-        return res.status(400).json({ message: 'Bad Request, missing list id' });
+app.post('/RemoveEvent', verifyToken, async (req, res) => {
+    // Consider what could happen if some idiot sends a request from a different user
+    const eventId = req.body["EventID"];
+    if(eventId === ""){
+        return res.status(400).json({ message: 'Bad Request, missing event id' });
     }
     
     try {
-        await RemoveList(id);
+        await RemoveList(eventId);
         return res.status(200).json({ message: 'List Removed' });
     } catch (error) {
         console.error("error: ", error);
-        return res.status(500).json({ message: 'Error removing list', error: error });
+        return res.status(500).json({ message: 'Error removing event', error: error });
     }
 });
 
@@ -179,16 +181,11 @@ function checkIfUserExists(username){
 function RemoveList(id) {
     return new Promise ((resolve, reject) => {
         
-        let removeListQuery = mysql.format("DELETE FROM `Shopping List` WHERE ID = ?;", [id]);
-        let removeItemQuery = mysql.format("DELETE FROM `Shopping List Item` WHERE List_ID = ?;", [id]);
-        
-        connection.query(removeItemQuery, (err) => {
+        removeEventQuery = mysql.format("DELETE FROM `Event` WHERE EventID = ?;", [id]);
+        connection.query(removeEventQuery, function (err, result, fields) {
             if (err) reject(err);
-            connection.query(removeListQuery, function (err, result, fields) {
-                if (err) reject(err);
-                resolve(result);
-            }); 
-        });
+            resolve(result);
+        }); 
     });
 }
 
@@ -202,9 +199,24 @@ function CreateList(name, description, id) {
     });
 }
 
-function GetListData(listId) {
+function CreateEvent(Date, Activity, Intensity, Length, StartTime, ID) {
     return new Promise ((resolve, reject) => {
-        let query = mysql.format("SELECT * FROM `Shopping List Item` WHERE `List_ID` = ?", [listId])
+    let query = mysql.format("INSERT INTO `Event` (`Date`, `ActivityType`, `Intensity`, `Length`, `StartTime`, `UserID`) VALUES (?, ?, ?, ?, ?, ?);", [Date, Activity, Intensity, Length, StartTime, ID]);
+        connection.query(query, function (err, result, fields) {
+            if (err) {
+                console.error('Error in createUser query:', err);
+                reject(err);
+            } else {
+                console.log('Result of createUser query:', result);
+                resolve(result && result.insertId);
+            }
+        });
+    });
+}
+
+function GetListData(UserID) {
+    return new Promise ((resolve, reject) => {
+        let query = mysql.format("SELECT * FROM `Event` WHERE `UserID` = ?", [UserID]);
         connection.query(query, function (err, result) {
             if (err) reject(err);
             resolve(result);
@@ -215,7 +227,7 @@ function GetListData(listId) {
 function getIdFromUsername(username){
     return new Promise((resolve, reject) => {
     
-        let query = mysql.format("SELECT ID FROM Users WHERE User_Name = ?;", [username]);
+        let query = mysql.format("SELECT ID FROM Users WHERE UserName = ?;", [username]);
         connection.query(query, function (err, result, fields) {
             if (err) reject(err);
             resolve(result[0].ID);
