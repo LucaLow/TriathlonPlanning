@@ -127,7 +127,7 @@ function CalendarView() {
   }
 
 
-  let activityTypes = ["Run", "Swim", "Ride"]
+  let activityTypes = ["Run", "Swim", "Ride", "Race"]
   let activityDifficulties = ["Low", "Zone 2", "Mid", "High", "Max Effort"]
 
   const cellRender = (current, info) => {
