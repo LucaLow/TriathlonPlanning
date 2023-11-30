@@ -65,7 +65,6 @@ app.post('/login', (req, res) => {
             } else {
                 const token = jwt.sign({ username: username }, process.env.USERSECRETKEY, { expiresIn: '24h' });
                 res.json({ token });
-
             }
         });
     });
@@ -129,9 +128,8 @@ app.post('/CreateEvent', verifyToken, async (req, res) => {
     }
     
     try {
-        console.log("Username: ", req.user.username)
         ID = await getIdFromUsername(req.user.username);
-        console.log("ID: ", ID)
+
         let listId = await CreateEvent(Date, Activity, Intensity, Length, StartTime, ID);
         return res.status(200).json({ message: 'Event Created', id: listId });
     } catch (error) {
@@ -207,8 +205,7 @@ function CreateEvent(Date, Activity, Intensity, Length, StartTime, ID) {
                 console.error('Error in createUser query:', err);
                 reject(err);
             } else {
-                console.log('Result of createUser query:', result);
-                resolve(result && result.insertId);
+                resolve(result.insertId);
             }
         });
     });

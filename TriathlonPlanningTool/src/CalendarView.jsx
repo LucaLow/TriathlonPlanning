@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Radio, Input, TimePicker, Rate, Badge, Calendar, Card } from 'antd';
 import { PlusCircleTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import FormItem from 'antd/es/form/FormItem';
@@ -103,8 +103,12 @@ function CalendarView() {
     {"Date": "2023-11-07", "Activity": "Ride", "Intensity": 4, "Length": "01:00", "Start Time": "16:00"},
   ]);
 
+  useEffect(() => {
+    
+    fetch("http://localhost:5000/GetEvent", )
+  }, []);
+
   function AddEvent(date, activity, intensity, length, time) {
-    /// TODO: Handle backend saving
     setTrainingData([...trainingData, {"Date": date, "Activity": activity, "Intensity": intensity, "Length": length, "Start Time": time}]);
   }
 
