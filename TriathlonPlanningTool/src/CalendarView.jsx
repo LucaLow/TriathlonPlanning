@@ -104,8 +104,21 @@ function CalendarView() {
   ]);
 
   useEffect(() => {
-    
-    fetch("http://localhost:5000/GetEvent", )
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjA2Mzk1LCJleHAiOjE3MDE2OTI3OTV9.xlXQYEobLx0A_6yZZpLWeTbnqAxRtVQH8Q-Yez0sz6Y";
+    const headers = {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+      }
+    }
+    fetch("http://localhost:5000/GetEvent", headers)
+    .then((response) => response.json())
+    .then((data) => {
+      setTrainingData(data["data"]);
+      console.log(trainingData)
+    }
+    );
   }, []);
 
   function AddEvent(date, activity, intensity, length, time) {
@@ -143,7 +156,7 @@ function CalendarView() {
     }
 
     const formattedDate = current.format('YYYY-MM-DD');
-    const activities = trainingData.filter((activity) => activity.Date === formattedDate);
+    const activities = trainingData.filter((activity) => dayjs(activity.Date).format("YYYY-MM-DD") === formattedDate);
     return (
       <ul className="events" style={{ listStyleType: 'none', padding: '0px', margin: '0px', alignItems: "center" }}>
         {activities.map((activity, index) => (
@@ -179,7 +192,7 @@ function CalendarView() {
                   
       <div className='CardHolder'>
           {
-            trainingData.filter((activity) => activity.Date === sellectedDate).map((activity) => (
+            Array.isArray(trainingData) && trainingData.filter((activity) => activity.Date === sellectedDate).map((activity) => (
               <Card title={activity.Activity} style={{ width: 300 }}>
                   <p>Start Time: {activity["Start Time"]}</p>
                   <p>Length: {activity.Length}</p>

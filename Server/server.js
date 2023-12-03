@@ -9,8 +9,7 @@ const saltRounds = 10;
 
 app.use(express.json()); 
 const corsOptions = {
-    origin: process.env.DATABASEIP,
-    optionsSuccessStatus: 200,
+
 };
   
 app.use(cors(corsOptions));
@@ -32,6 +31,7 @@ connection.query("USE TriathlonTraining;", function (err, result) {
 });
 
 function verifyToken(req, res, next) {
+    console.log("request")
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
