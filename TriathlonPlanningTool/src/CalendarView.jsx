@@ -90,21 +90,11 @@ function CreateEventModal(props) {
 function CalendarView() {
   const [modalVisible, setModalVisible] = useState(false);
   const [sellectedDate, setSellectedDate] = useState("");
-  const [trainingData, setTrainingData] = useState([ // Ensure to use ID when we have a backend, and integrate that id with the add event and remove event functions
-    {"Date": "2023-11-01", "Activity": "Run", "Intensity": 2, "Length": "00:30", "Start Time": "08:00"},
-    {"Date": "2023-11-02", "Activity": "Swim", "Intensity": 3, "Length": "00:45", "Start Time": "12:00"},
-    {"Date": "2023-11-02", "Activity": "Run", "Intensity": 3, "Length": "00:45", "Start Time": "12:00"},
-    {"Date": "2023-11-02", "Activity": "Ride", "Intensity": 2, "Length": "01:00", "Start Time": "16:00"},
-    {"Date": "2023-11-05", "Activity": "Run", "Intensity": 2, "Length": "00:30", "Start Time": "08:00"},
-    {"Date": "2023-11-03", "Activity": "Swim", "Intensity": 3, "Length": "00:45", "Start Time": "12:00"},
-    {"Date": "2023-11-06", "Activity": "Ride", "Intensity": 4, "Length": "01:00", "Start Time": "16:00"},
-    {"Date": "2023-11-07", "Activity": "Run", "Intensity": 2, "Length": "00:30", "Start Time": "08:00"},
-    {"Date": "2023-11-08", "Activity": "Swim", "Intensity": 3, "Length": "00:45", "Start Time": "12:00"},
-    {"Date": "2023-11-07", "Activity": "Ride", "Intensity": 4, "Length": "01:00", "Start Time": "16:00"},
-  ]);
-
+  const [trainingData, setTrainingData] = useState([]);
+  
   useEffect(() => {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjA2Mzk1LCJleHAiOjE3MDE2OTI3OTV9.xlXQYEobLx0A_6yZZpLWeTbnqAxRtVQH8Q-Yez0sz6Y";
+    setSellectedDate(dayjs().format('YYYY-MM-DD'));
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE";
     const headers = {
       method: 'POST',
       headers: {
@@ -116,13 +106,32 @@ function CalendarView() {
     .then((response) => response.json())
     .then((data) => {
       setTrainingData(data["data"]);
-      console.log(trainingData)
+      console.log(data["data"])
     }
     );
   }, []);
 
   function AddEvent(date, activity, intensity, length, time) {
-    setTrainingData([...trainingData, {"Date": date, "Activity": activity, "Intensity": intensity, "Length": length, "Start Time": time}]);
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE";
+    fetch("http://localhost:5000/CreateEvent", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "Date": date,
+        "Activity": activity,
+        "Intensity": intensity,
+        "Length": length,
+        "StartTime": time
+      })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      setTrainingData([...trainingData, {"Date": date, "ActivityType": activity, "Intensity": intensity, "Length": length, "Start Time": time, EventID: data.message.id}]);
+    });
   }
 
   const handleRightClick = (e) => {
@@ -139,7 +148,17 @@ function CalendarView() {
   };
 
   function removeEvent(sellectedActivity) {
-    // TODO: Handle backend saving
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE"
+    fetch("http://localhost:5000/RemoveEvent", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "EventID": sellectedActivity.EventID
+      })
+    });
     setTrainingData(trainingData.filter((activity) => (activity !== sellectedActivity)));
   }
 
@@ -160,8 +179,8 @@ function CalendarView() {
     return (
       <ul className="events" style={{ listStyleType: 'none', padding: '0px', margin: '0px', alignItems: "center" }}>
         {activities.map((activity, index) => (
-          <li key={index} style={{ textAlign: 'center' }}>
-            <Badge color={ActivityColors[activity.Activity]} ß/>
+          <li key={index} style={{ textAlign: 'center' }} >
+            <Badge color={ActivityColors[activity.ActivityType]} />
           </li>
         ))}
       </ul>
@@ -192,8 +211,8 @@ function CalendarView() {
                   
       <div className='CardHolder'>
           {
-            Array.isArray(trainingData) && trainingData.filter((activity) => activity.Date === sellectedDate).map((activity) => (
-              <Card title={activity.Activity} style={{ width: 300 }}>
+            Array.isArray(trainingData) && trainingData.filter((activity) => dayjs(activity.Date).format("YYYY-MM-DD") === sellectedDate).map((activity, index) => (
+              <Card title={activity.Activity} style={{ width: 300 }} id={activity.key} key={index}>
                   <p>Start Time: {activity["Start Time"]}</p>
                   <p>Length: {activity.Length}</p>
                   <p>Intensity: {activity.Intensity}/5</p>
