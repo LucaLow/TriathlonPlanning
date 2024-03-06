@@ -1,0 +1,17 @@
+html {
+    padding: 0;
+    margin: 0;
+}
+.loginContainer {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.SignupHolder {
+    margin-top: 10%;
+    width: max(50vw, 300px);
+}

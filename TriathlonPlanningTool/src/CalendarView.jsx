@@ -5,6 +5,7 @@ import { PlusCircleTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import FormItem from 'antd/es/form/FormItem';
 import dayjs from 'dayjs';
 import './CalenderView.css';
+import { useNavigate } from 'react-router-dom';
 
 
 function CreateEventModal(props) {
@@ -91,10 +92,11 @@ function CalendarView() {
   const [modalVisible, setModalVisible] = useState(false);
   const [sellectedDate, setSellectedDate] = useState("");
   const [trainingData, setTrainingData] = useState([]);
-  
+  const navigate = useNavigate()
   useEffect(() => {
+    if(!localStorage.getItem("token")) navigate("\login")
     setSellectedDate(dayjs().format('YYYY-MM-DD'));
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE";
+    let token = localStorage.getItem("token")
     const headers = {
       method: 'POST',
       headers: {
@@ -103,7 +105,10 @@ function CalendarView() {
       }
     }
     fetch("http://localhost:5000/GetEvent", headers)
-    .then((response) => response.json())
+    .then((response) => {
+      if(!response.ok) navigate("/login")
+      return response.json()
+    })
     .then((data) => {
       setTrainingData(data["data"]);
       console.log(data["data"])
@@ -112,7 +117,7 @@ function CalendarView() {
   }, []);
 
   function AddEvent(date, activity, intensity, length, time) {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE";
+    let token = localStorage.getItem("token")
     fetch("http://localhost:5000/CreateEvent", {
       method: 'POST',
       headers: {
@@ -148,7 +153,7 @@ function CalendarView() {
   };
 
   function removeEvent(sellectedActivity) {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAxNjQ5MDc0LCJleHAiOjE3MDE3MzU0NzR9.gXiNCM7vhPwWcNem6TyiWfSrtLRQwzvluIOezk9VOLE"
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAyNDUyODQ5LCJleHAiOjE3MDI1MzkyNDl9.zD9AuDtN4qH_hRuclOZqFbmzWpB1fkTR4-x91JooBss"
     fetch("http://localhost:5000/RemoveEvent", {
       method: 'POST',
       headers: {
@@ -213,6 +218,7 @@ function CalendarView() {
           {
             Array.isArray(trainingData) && trainingData.filter((activity) => dayjs(activity.Date).format("YYYY-MM-DD") === sellectedDate).map((activity, index) => (
               <Card title={activity.Activity} style={{ width: 300 }} id={activity.key} key={index}>
+                  <p>Activity: {activity["ActivityType"]}</p>
                   <p>Start Time: {activity["Start Time"]}</p>
                   <p>Length: {activity.Length}</p>
                   <p>Intensity: {activity.Intensity}/5</p>

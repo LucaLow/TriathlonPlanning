@@ -31,7 +31,6 @@ connection.query("USE TriathlonTraining;", function (err, result) {
 });
 
 function verifyToken(req, res, next) {
-    console.log("request")
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -56,12 +55,12 @@ app.post('/login', (req, res) => {
     const query = mysql.format("SELECT Password FROM Users WHERE UserName = ?;", [username]);
     connection.query(query, function (err, result, fields) {
         if(result.length === 0) {
-            return res.status(200).json({ message: 'Authentication failed, login failure' });
+            return res.status(401).json({ message: 'Authentication failed, login failure' });
         }
         // Check if password is correct
         compareHash(password, result[0].Password).then((result) => {
             if(!result){
-                return res.status(200).json({ message: 'Authentication failed, login failure' });
+                return res.status(401).json({ message: 'Authentication failed, login failure' });
             } else {
                 const token = jwt.sign({ username: username }, process.env.USERSECRETKEY, { expiresIn: '24h' });
                 res.json({ token });
@@ -80,7 +79,7 @@ app.post('/signup', (req, res) => {
         // Check if user exists
         checkIfUserExists(username).then((result) => {
             if(result){
-                return res.status(200).json({ message: 'User already exists' });
+                return res.status(401).json({ message: 'User already exists' });
             } else {
                 createUser(username, password).then((result) => {
                     const token = jwt.sign({ username: username }, process.env.USERSECRETKEY, { expiresIn: '24h' });
