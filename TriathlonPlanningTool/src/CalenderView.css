@@ -64,3 +64,8 @@ html, body {
     margin: 0%;
     padding: 0%;
 }
+.logout {
+    position: relative;
+    right: 45%;
+    margin: 1%;
+}

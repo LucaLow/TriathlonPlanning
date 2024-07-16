@@ -92,16 +92,21 @@ function CalendarView() {
   const [modalVisible, setModalVisible] = useState(false);
   const [sellectedDate, setSellectedDate] = useState("");
   const [trainingData, setTrainingData] = useState([]);
-  const navigate = useNavigate()
+  const [token, setToken] = useState("");
+  const navigate = useNavigate();
+  
   useEffect(() => {
-    if(!localStorage.getItem("token")) navigate("\login")
+    const storedToken = localStorage.getItem("token")
+    if(!storedToken) navigate("/login")
     setSellectedDate(dayjs().format('YYYY-MM-DD'));
-    let token = localStorage.getItem("token")
+    setToken(storedToken)
+    console.log(localStorage.getItem("token"))
+    console.log("Token: ", token);
     const headers = {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${storedToken}`,
       }
     }
     fetch("http://localhost:5000/GetEvent", headers)
@@ -117,7 +122,6 @@ function CalendarView() {
   }, []);
 
   function AddEvent(date, activity, intensity, length, time) {
-    let token = localStorage.getItem("token")
     fetch("http://localhost:5000/CreateEvent", {
       method: 'POST',
       headers: {
@@ -153,7 +157,6 @@ function CalendarView() {
   };
 
   function removeEvent(sellectedActivity) {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjEiLCJpYXQiOjE3MjExMDcwNDksImV4cCI6MTcyMTE5MzQ0OX0.1u2jimsWoNT3flQW9oXiEeae37Thu3uRWQUEASMFdjg"
     fetch("http://localhost:5000/RemoveEvent", {
       method: 'POST',
       headers: {
@@ -194,6 +197,7 @@ function CalendarView() {
 
   return (
     <>
+      <Button className='logout' type='primary' danger onClick={()=>{setToken(""); localStorage.setItem("token", ""); navigate("/login")}}>Log Out</Button>
       <div className='calenderContainer'>
         <Calendar onContextMenu={handleRightClick} onSelect={(date, { source }) => {
           if(source == "date") {
@@ -219,7 +223,7 @@ function CalendarView() {
             Array.isArray(trainingData) && trainingData.filter((activity) => dayjs(activity.Date).format("YYYY-MM-DD") === sellectedDate).map((activity, index) => (
               <Card title={activity.Activity} style={{ width: 300 }} id={activity.key} key={index}>
                   <p>Activity: {activity["ActivityType"]}</p>
-                  <p>Start Time: {activity["Start Time"]}</p>
+                  <p>Start Time: {activity["StartTime"]}</p>
                   <p>Length: {activity.Length}</p>
                   <p>Intensity: {activity.Intensity}/5</p>
                   <Button type="primary" ghost onClick={() => {removeEvent(activity)}}><DeleteTwoTone /></Button>
