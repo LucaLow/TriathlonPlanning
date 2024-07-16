@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input } from 'antd';
+import { Button, Card, Form, Input, Alert } from 'antd';
 import gsap from 'gsap';
 import './login.css';
 
@@ -8,20 +8,23 @@ import './login.css';
 function LoginSignupPage(){
   const navigate = useNavigate();
   const [Mode, setMode] = useState('Login');
-  
+  const [message, setMessage] = useState("")
   return (
     <div className={`loginContainer`}>
       <h1 className='loginSignupTitle'>Triathlon Planning Tool</h1>
       {Mode === 'Login' ? (
-        <Login setMode={setMode} Mode={Mode} navigate={navigate} />
+        <Login setMode={setMode} Mode={Mode} navigate={navigate} setMessage={setMessage} />
         ) : (
-        <Signup setMode={setMode} Mode={Mode} navigate={navigate} />
+        <Signup setMode={setMode} Mode={Mode} navigate={navigate} setMessage={setMessage} />
       )}
+      {message != "" ? (
+        <Alert type="warning" message={message} style={{ marginTop: '20px' }} closable />
+      ):(null)}
     </div>
   );
 }
 
-function Login({setMode, navigate}) {
+function Login({setMode, navigate, setMessage}) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -48,7 +51,7 @@ function Login({setMode, navigate}) {
         localStorage.setItem('token', response.token);
         navigate('/');
       } else {
-        setAlert(response.message);
+        setMessage(response.message);
       }
       return response;
     })
@@ -87,7 +90,7 @@ function Login({setMode, navigate}) {
   )
 }
 
-function Signup({setMode, navigate}) {
+function Signup({setMode, navigate, setMessage}) {
   
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -115,12 +118,23 @@ function Signup({setMode, navigate}) {
         localStorage.setItem('token', response.token);
         navigate('/');
       } else {
-        setAlert(response.message);
+        setMessage(response.message);
       }
       return response;
+
+
+
+
+
+
+
+
+
+
+      
     })
     .catch((error) => {
-      console.log('Error:', error);
+      setMessage(response.message);
     });
   }
 

@@ -153,7 +153,7 @@ function CalendarView() {
   };
 
   function removeEvent(sellectedActivity) {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxhYWZzZGZzZGZhZGZkZnVjIiwiaWF0IjoxNzAyNDUyODQ5LCJleHAiOjE3MDI1MzkyNDl9.zD9AuDtN4qH_hRuclOZqFbmzWpB1fkTR4-x91JooBss"
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjEiLCJpYXQiOjE3MjExMDcwNDksImV4cCI6MTcyMTE5MzQ0OX0.1u2jimsWoNT3flQW9oXiEeae37Thu3uRWQUEASMFdjg"
     fetch("http://localhost:5000/RemoveEvent", {
       method: 'POST',
       headers: {
