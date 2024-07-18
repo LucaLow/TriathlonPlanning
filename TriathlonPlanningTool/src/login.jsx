@@ -1,63 +1,77 @@
-import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Alert } from 'antd';
-import gsap from 'gsap';
-import './login.css';
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Form, Input, Alert } from "antd";
+import gsap from "gsap";
+import "./login.css";
 
-
-function LoginSignupPage(){
+function LoginSignupPage() {
   const navigate = useNavigate();
-  const [Mode, setMode] = useState('Login');
-  const [message, setMessage] = useState("")
+  const [Mode, setMode] = useState("Login");
+  const [message, setMessage] = useState("");
   return (
     <div className={`loginContainer`}>
-      <h1 className='loginSignupTitle'>Triathlon Planning Tool</h1>
-      {Mode === 'Login' ? (
-        <Login setMode={setMode} Mode={Mode} navigate={navigate} setMessage={setMessage} />
-        ) : (
-        <Signup setMode={setMode} Mode={Mode} navigate={navigate} setMessage={setMessage} />
+      <h1 className="loginSignupTitle">Triathlon Planning Tool</h1>
+      {Mode === "Login" ? (
+        <Login
+          setMode={setMode}
+          Mode={Mode}
+          navigate={navigate}
+          setMessage={setMessage}
+        />
+      ) : (
+        <Signup
+          setMode={setMode}
+          Mode={Mode}
+          navigate={navigate}
+          setMessage={setMessage}
+        />
       )}
       {message != "" ? (
-        <Alert type="warning" message={message} style={{ marginTop: '20px' }} closable />
-      ):(null)}
+        <Alert
+          type="warning"
+          message={message}
+          style={{ marginTop: "20px" }}
+          closable
+        />
+      ) : null}
     </div>
   );
 }
 
-function Login({setMode, navigate, setMessage}) {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+function Login({ setMode, navigate, setMessage }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  function submit(){
-    console.log(username)
-    console.log(password)
+  function submit() {
+    console.log(username);
+    console.log(password);
     var jsonData = {
-      "username": username,
-      "password": password
-    }
-    fetch('http://localhost:5000/login', {
-      method: 'POST', 
+      username: username,
+      password: password,
+    };
+    fetch("http://localhost:5000/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(jsonData)
+      body: JSON.stringify(jsonData),
     })
-    .then(res => res.json())
-    .then((response) => {
-      let token = JSON.stringify(response.token)
-      
-      if (token !== undefined) {
-        localStorage.setItem('token', response.token);
-        navigate('/');
-      } else {
-        setMessage(response.message);
-      }
-      return response;
-    })
-    .catch((error) => {
-      console.log('Error:', error);
-    });
+      .then((res) => res.json())
+      .then((response) => {
+        let token = JSON.stringify(response.token);
+
+        if (token !== undefined) {
+          localStorage.setItem("token", response.token);
+          navigate("/");
+        } else {
+          setMessage(response.message);
+        }
+        return response;
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
   }
 
   function handleUsernameChange(event) {
@@ -68,74 +82,65 @@ function Login({setMode, navigate, setMessage}) {
     setPassword(event.target.value);
   }
 
-
   return (
-    <Card title="Login" hoverable={true} className='SignupHolder' actions={[<Switchmode Mode={"Signup"} setMode={setMode}/>, <Button type="primary" onClick={submit}>Login</Button>]}>
+    <Card
+      title="Login"
+      hoverable={true}
+      className="SignupHolder"
+      actions={[
+        <Switchmode Mode={"Signup"} setMode={setMode} />,
+        <Button type="primary" onClick={submit}>
+          Login
+        </Button>,
+      ]}
+    >
       <Form>
-          <Form.Item
-          label="Username"
-          name="username"
-          >
-            <Input value={username} onChange={handleUsernameChange}/>
-          </Form.Item>
-          
-          <Form.Item
-          label="Password"
-          name="password"
-          >
-            <Input value={password} onChange={handlePasswordChange}/>
-          </Form.Item>
+        <Form.Item label="Username" name="username">
+          <Input value={username} onChange={handleUsernameChange} />
+        </Form.Item>
+
+        <Form.Item label="Password" name="password">
+          <Input value={password} onChange={handlePasswordChange} />
+        </Form.Item>
       </Form>
     </Card>
-  )
+  );
 }
 
-function Signup({setMode, navigate, setMessage}) {
-  
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+function Signup({ setMode, navigate, setMessage }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  function submit(){
-    console.log(username)
-    console.log(password)
+  function submit() {
+    console.log(username);
+    console.log(password);
     var jsonData = {
-      "username": username,
-      "password": password
-    }
-    fetch('http://localhost:5000/signup', {
-      method: 'POST', 
+      username: username,
+      password: password,
+    };
+    fetch("http://localhost:5000/signup", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(jsonData)
+      body: JSON.stringify(jsonData),
     })
-    .then(res => res.json())
-    .then((response) => {
-      let token = JSON.stringify(response.token)
-      
-      if (token !== undefined) {
-        localStorage.setItem('token', response.token);
-        navigate('/');
-      } else {
+      .then((res) => res.json())
+      .then((response) => {
+        let token = JSON.stringify(response.token);
+
+        if (token !== undefined) {
+          localStorage.setItem("token", response.token);
+          navigate("/");
+        } else {
+          setMessage(response.message);
+        }
+        return response;
+      })
+      .catch((error) => {
         setMessage(response.message);
-      }
-      return response;
-
-
-
-
-
-
-
-
-
-
-      
-    })
-    .catch((error) => {
-      setMessage(response.message);
-    });
+      });
   }
 
   function handleUsernameChange(event) {
@@ -150,44 +155,49 @@ function Signup({setMode, navigate, setMessage}) {
     setConfirmPassword(event.target.value);
   }
 
-
   return (
-    <Card title="Signup" hoverable={true} className='SignupHolder' actions={[<Switchmode Mode={"Login"} setMode={setMode}/>, <Button type="primary" onClick={submit}>Signup</Button>]}>
+    <Card
+      title="Signup"
+      hoverable={true}
+      className="SignupHolder"
+      actions={[
+        <Switchmode Mode={"Login"} setMode={setMode} />,
+        <Button type="primary" onClick={submit}>
+          Signup
+        </Button>,
+      ]}
+    >
       <Form>
-          <Form.Item
-          label="Username"
-          name="username"
-          >
-            <Input value={username} onChange={handleUsernameChange}/>
-          </Form.Item>
-          
-          <Form.Item
-          label="Password"
-          name="password"
-          >
-            <Input value={password} onChange={handlePasswordChange}/>
-          </Form.Item>
-          
-          <Form.Item
-          label="Confirm Password"
-          name="Confirm Password"
-          >
-            <Input value={confirmPassword} onChange={handleConfirmPasswordChange}/>
-          </Form.Item>
+        <Form.Item label="Username" name="username">
+          <Input value={username} onChange={handleUsernameChange} />
+        </Form.Item>
+
+        <Form.Item label="Password" name="password">
+          <Input value={password} onChange={handlePasswordChange} />
+        </Form.Item>
+
+        <Form.Item label="Confirm Password" name="Confirm Password">
+          <Input
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+          />
+        </Form.Item>
       </Form>
     </Card>
-  )
+  );
 }
 
-function Switchmode({Mode, setMode}) {
-  function changeMode (){
-    Mode === "Login" ? ( setMode("Login")) : ( setMode("Signup"))
+function Switchmode({ Mode, setMode }) {
+  function changeMode() {
+    Mode === "Login" ? setMode("Login") : setMode("Signup");
   }
   return (
     <>
-      <Button type="default"  onClick={changeMode}>{Mode}</Button>
+      <Button type="default" onClick={changeMode}>
+        {Mode}
+      </Button>
     </>
-  )
+  );
 }
 
-export default LoginSignupPage
+export default LoginSignupPage;
