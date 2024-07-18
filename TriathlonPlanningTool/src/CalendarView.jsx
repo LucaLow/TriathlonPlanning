@@ -1,18 +1,18 @@
 
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, Radio, Input, TimePicker, Rate, Badge, Calendar, Card } from 'antd';
+import { Modal, Button, Radio, Input, TimePicker, Rate, Badge, Calendar, Card, Segmented } from 'antd';
 import { PlusCircleTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import FormItem from 'antd/es/form/FormItem';
 import dayjs from 'dayjs';
 import './CalenderView.css';
 import { useNavigate } from 'react-router-dom';
 
-
 function CreateEventModal(props) {
   const [activityType, setActivityType] = useState('');
   const [intensity, setIntensity] = useState(0);
   const [time, setTime] = useState(dayjs("00:00", "HH:mm"));
   const [length, setLength] = useState(dayjs("00:00", "HH:mm"));
+  const [exercistType, setExercistType] = useState('Workout')
 
   const handleActivityTypeChange = (e) => {
     console.log(e.target.value);
@@ -52,6 +52,14 @@ function CreateEventModal(props) {
       onOk={handleOk}
       onCancel={handleCancel}
     >
+      <Segmented
+        block
+        className='activitySelect' 
+        options={["Workout", "Race"]}
+        value={exercistType}
+        onChange={setExercistType}
+      />
+      {exercistType == "Workout" && <>
       <FormItem label="Activity Type">
           <Radio.Group onChange={handleActivityTypeChange}>
               <Radio.Button value="Run">Run</Radio.Button>
@@ -72,6 +80,7 @@ function CreateEventModal(props) {
         placeholder="Length"
         className='margin-right: 10px;'
         value={length}
+        needConfirm={false}
         onChange={handleLengthChange}
       />
       <TimePicker
@@ -82,8 +91,12 @@ function CreateEventModal(props) {
         value={time}
         onChange={handleTimeChange}
       />
-
       </FormItem>
+      </> || <>
+        <FormItem>
+          
+        </FormItem>
+      </>}
     </Modal>
   );
 }
@@ -116,7 +129,6 @@ function CalendarView() {
     })
     .then((data) => {
       setTrainingData(data["data"]);
-      console.log(data["data"])
     }
     );
   }, []);
@@ -171,8 +183,8 @@ function CalendarView() {
   }
 
 
-  let activityTypes = ["Run", "Swim", "Ride", "Race"]
-  let activityDifficulties = ["Low", "Zone 2", "Mid", "High", "Max Effort"]
+  // const activityTypes = ["Run", "Swim", "Ride", "Race"]
+  // let activityDifficulties = ["Low", "Zone 2", "Mid", "High", "Max Effort"]
 
   const cellRender = (current, info) => {
     if (info.type !== 'date') return info.originNode;
