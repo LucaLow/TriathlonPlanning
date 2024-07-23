@@ -1,9 +1,12 @@
 CREATE TABLE `Event`(
-    `UserID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `Intensity` INT NOT NULL,
-    `ActivityType` TEXT NOT NULL,
-    `Length` TIME NOT NULL,
-    `StartTime` TIME NOT NULL,
+    `UserID` BIGINT UNSIGNED NOT NULL,
+    `Intensity` INT NULL,
+    `ActivityType` TEXT NULL,
+    `Length` TIME NULL,
+    `StartTime` TIME NULL,
+    `RaceName` TEXT NULL,
+    `RaceType` TEXT NULL,
+    `EventType` TEXT NOT NULL,
     `EventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `Date` DATE NOT NULL
 );

@@ -49,7 +49,17 @@ function CalendarView() {
       });
   }, []);
 
-  function AddEvent(date, activity, intensity, length, time) {
+  function AddEvent(
+    date,
+    activity,
+    intensity,
+    length,
+    time,
+    raceName,
+    raceType,
+    exercistType
+  ) {
+    console.log(date, activity, intensity, length, time, raceName, raceType);
     fetch("http://localhost:5000/CreateEvent", {
       method: "POST",
       headers: {
@@ -62,6 +72,9 @@ function CalendarView() {
         Intensity: intensity,
         Length: length,
         StartTime: time,
+        RaceName: raceName,
+        RaceType: raceType,
+        ExercistType: exercistType,
       }),
     })
       .then((response) => response.json())

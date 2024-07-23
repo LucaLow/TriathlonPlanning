@@ -140,29 +140,48 @@ app.post("/CreateEvent", verifyToken, async (req, res) => {
   const Intensity = req.body["Intensity"];
   const Length = req.body["Length"];
   const StartTime = req.body["StartTime"];
+  const RaceType = req.body["RaceType"];
+  const RaceName = req.body["RaceName"];
+  const ExercistType = req.body["ExercistType"];
   let ID;
-  if (
-    Date === "" ||
-    Activity === "" ||
-    Intensity === "" ||
-    Length === "" ||
-    StartTime === "" ||
-    ID === ""
-  ) {
-    return res.status(400).json({ message: "Bad Request, missing parameters" });
+  if (!ExercistType) return res.status(400);
+  if (ExercistType === "Workout") {
+    if (
+      Date === "" ||
+      Activity === "" ||
+      Intensity === "" ||
+      Length === "" ||
+      StartTime === "" ||
+      ID === ""
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Bad Request, missing parameters" });
+    }
+  } else {
+    if (RaceName === "" || RaceType === "") {
+      return res
+        .status(400)
+        .json({ message: "Bad Request, missing parameters" });
+    }
   }
 
   try {
     ID = await getIdFromUsername(req.user.username);
 
-    let listId = await CreateEvent(
-      Date,
-      Activity,
-      Intensity,
-      Length,
-      StartTime,
-      ID
-    );
+    let listId;
+
+    if (ExercistType === "Workout")
+      listID = await CreateEvent(
+        Date,
+        Activity,
+        Intensity,
+        Length,
+        StartTime,
+        ID
+      );
+    else listID = await CreateRace(Date, RaceType, RaceName, ID);
+
     return res.status(200).json({ message: "Event Created", id: listId });
   } catch (error) {
     console.error("error: ", error);
@@ -245,8 +264,24 @@ function CreateList(name, description, id) {
 function CreateEvent(Date, Activity, Intensity, Length, StartTime, ID) {
   return new Promise((resolve, reject) => {
     let query = mysql.format(
-      "INSERT INTO `Event` (`Date`, `ActivityType`, `Intensity`, `Length`, `StartTime`, `UserID`) VALUES (?, ?, ?, ?, ?, ?);",
+      "INSERT INTO `Event` (`Date`, `ActivityType`, `Intensity`, `Length`, `StartTime`, `UserID`, `EventType`) VALUES (?, ?, ?, ?, ?, `workout`);",
       [Date, Activity, Intensity, Length, StartTime, ID]
+    );
+    connection.query(query, function (err, result, fields) {
+      if (err) {
+        console.error("Error in createUser query:", err);
+        reject(err);
+      } else {
+        resolve(result.insertId);
+      }
+    });
+  });
+}
+function CreateRace(Date, RaceType, RaceName, ID) {
+  return new Promise((resolve, reject) => {
+    let query = mysql.format(
+      "INSERT INTO `Event` (`Date`, `RaceName`, `RaceType`, `UserID`, `EventType`) VALUES (?, ?, ?, ?, ?);",
+      [Date, RaceName, RaceType, ID, "race"]
     );
     connection.query(query, function (err, result, fields) {
       if (err) {

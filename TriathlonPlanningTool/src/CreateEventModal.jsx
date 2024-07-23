@@ -10,6 +10,8 @@ function CreateEventModal(props) {
   const [time, setTime] = useState(dayjs("00:00", "HH:mm"));
   const [length, setLength] = useState(dayjs("00:00", "HH:mm"));
   const [exercistType, setExercistType] = useState("Workout");
+  const [raceName, setRaceName] = useState("");
+  const [raceType, setRaceType] = useState("");
 
   const handleActivityTypeChange = (e) => {
     console.log(e.target.value);
@@ -38,29 +40,27 @@ function CreateEventModal(props) {
       activityType,
       intensity,
       length.format("HH:mm"),
-      time.format("HH:mm")
+      time.format("HH:mm"),
+      raceName,
+      raceType,
+      exercistType
     );
     console.log(
       props.sellectedDate,
       activityType,
       intensity,
       length.format("HH:mm"),
-      time.format("HH:mm")
+      time.format("HH:mm"),
+      raceName,
+      raceType,
+      exercistType
     );
     props.onOk();
   };
 
-  const handleCancel = () => {
-    props.onCancel();
-  };
-  const handleRaceNameChange = (e) => {
-    //
-    console.log(e);
-  };
-  const handleRaceTypeChange = (e) => {
-    //
-    console.log(e);
-  };
+  const handleCancel = () => props.onCancel();
+  const handleRaceNameChange = (e) => setRaceName(e.target.value);
+  const handleRaceTypeChange = (e) => setRaceType(e.target.value);
 
   return (
     <Modal
