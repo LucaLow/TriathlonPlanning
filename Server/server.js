@@ -171,7 +171,7 @@ app.post("/CreateEvent", verifyToken, async (req, res) => {
 
     let listId;
 
-    if (ExercistType === "Workout")
+    if (ExercistType === "workout")
       listID = await CreateEvent(
         Date,
         Activity,
@@ -264,8 +264,8 @@ function CreateList(name, description, id) {
 function CreateEvent(Date, Activity, Intensity, Length, StartTime, ID) {
   return new Promise((resolve, reject) => {
     let query = mysql.format(
-      "INSERT INTO `Event` (`Date`, `ActivityType`, `Intensity`, `Length`, `StartTime`, `UserID`, `EventType`) VALUES (?, ?, ?, ?, ?, `workout`);",
-      [Date, Activity, Intensity, Length, StartTime, ID]
+      "INSERT INTO `Event` (`Date`, `ActivityType`, `Intensity`, `Length`, `StartTime`, `UserID`, `EventType`) VALUES (?, ?, ?, ?, ?, ?);",
+      [Date, Activity, Intensity, Length, StartTime, ID, "workout"]
     );
     connection.query(query, function (err, result, fields) {
       if (err) {

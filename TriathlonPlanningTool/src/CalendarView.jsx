@@ -59,7 +59,16 @@ function CalendarView() {
     raceType,
     exercistType
   ) {
-    console.log(date, activity, intensity, length, time, raceName, raceType);
+    console.log(
+      date,
+      activity,
+      intensity,
+      length,
+      time,
+      raceName,
+      raceType,
+      exercistType
+    );
     fetch("http://localhost:5000/CreateEvent", {
       method: "POST",
       headers: {
@@ -79,10 +88,12 @@ function CalendarView() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setTrainingData([
           ...trainingData,
           {
+            EventType: exercistType,
+            RaceType: raceType,
+            RaceName: raceName,
             Date: date,
             ActivityType: activity,
             Intensity: intensity,
@@ -91,6 +102,7 @@ function CalendarView() {
             EventID: data.message.id,
           },
         ]);
+        console.log(trainingData);
       });
   }
 
@@ -123,9 +135,6 @@ function CalendarView() {
     );
   }
 
-  // const activityTypes = ["Run", "Swim", "Ride", "Race"]
-  // let activityDifficulties = ["Low", "Zone 2", "Mid", "High", "Max Effort"]
-
   const cellRender = (current, info) => {
     if (info.type !== "date") return info.originNode;
     var ActivityColors = {
@@ -150,7 +159,11 @@ function CalendarView() {
       >
         {activities.map((activity, index) => (
           <li key={index} style={{ textAlign: "center" }}>
-            <Badge color={ActivityColors[activity.ActivityType]} />
+            {activity.EventType === "race" ? (
+              <Badge color={"gold"} />
+            ) : (
+              <Badge color={ActivityColors[activity.ActivityType]} />
+            )}
           </li>
         ))}
       </ul>
@@ -208,10 +221,21 @@ function CalendarView() {
                 id={activity.key}
                 key={index}
               >
-                <p>Activity: {activity["ActivityType"]}</p>
-                <p>Start Time: {activity["StartTime"]}</p>
-                <p>Length: {activity.Length}</p>
-                <p>Intensity: {activity.Intensity}/5</p>
+                {activity.EventType === "race" ||
+                activity.EventType === "Race" ? (
+                  <>
+                    <h4>RACE DAY</h4>
+                    <p>{activity.RaceName}</p>
+                    <p>{activity.RaceType}</p>
+                  </>
+                ) : (
+                  <>
+                    <p>Activity: {activity["ActivityType"]}</p>
+                    <p>Start Time: {activity["StartTime"]}</p>
+                    <p>Length: {activity.Length}</p>
+                    <p>Intensity: {activity.Intensity}/5</p>
+                  </>
+                )}
                 <Button
                   type="primary"
                   ghost

@@ -4,6 +4,7 @@ import { Button, Card, Form, Input, Alert } from "antd";
 import gsap from "gsap";
 import "./login.css";
 
+// TODO: hide password and confirmation when entering
 function LoginSignupPage() {
   const navigate = useNavigate();
   const [Mode, setMode] = useState("Login");
