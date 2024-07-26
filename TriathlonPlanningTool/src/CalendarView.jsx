@@ -159,7 +159,7 @@ function CalendarView() {
       >
         {activities.map((activity, index) => (
           <li key={index} style={{ textAlign: "center" }}>
-            {activity.EventType === "race" ? (
+            {activity.EventType === "race" || activity.EventType === "Race" ? (
               <Badge color={"gold"} />
             ) : (
               <Badge color={ActivityColors[activity.ActivityType]} />
