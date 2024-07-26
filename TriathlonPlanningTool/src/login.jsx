@@ -42,7 +42,6 @@ function LoginSignupPage() {
 function Login({ setMode, navigate, setMessage }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   function submit() {
     console.log(username);
@@ -114,8 +113,10 @@ function Signup({ setMode, navigate, setMessage }) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   function submit() {
-    console.log(username);
-    console.log(password);
+    if (password != confirmPassword) {
+      setMessage("Password and Confirm are not the same");
+      return;
+    }
     var jsonData = {
       username: username,
       password: password,
