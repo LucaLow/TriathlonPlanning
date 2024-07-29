@@ -82,6 +82,12 @@ function Login({ setMode, navigate, setMessage }) {
     setPassword(event.target.value);
   }
 
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      submit();
+    }
+  }
+
   return (
     <Card
       title="Login"
@@ -100,7 +106,11 @@ function Login({ setMode, navigate, setMessage }) {
         </Form.Item>
 
         <Form.Item label="Password" name="password">
-          <Input value={password} onChange={handlePasswordChange} />
+          <Input
+            value={password}
+            onChange={handlePasswordChange}
+            onKeyDown={handleKeyDown}
+          />
         </Form.Item>
       </Form>
     </Card>
@@ -156,6 +166,11 @@ function Signup({ setMode, navigate, setMessage }) {
   function handleConfirmPasswordChange(event) {
     setConfirmPassword(event.target.value);
   }
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      submit();
+    }
+  }
 
   return (
     <Card
@@ -182,6 +197,7 @@ function Signup({ setMode, navigate, setMessage }) {
           <Input
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
+            onKeyDown={handleKeyDown}
           />
         </Form.Item>
       </Form>

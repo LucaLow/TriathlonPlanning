@@ -277,6 +277,7 @@ function CreateEvent(Date, Activity, Intensity, Length, StartTime, ID) {
     });
   });
 }
+
 function CreateRace(Date, RaceType, RaceName, ID) {
   return new Promise((resolve, reject) => {
     let query = mysql.format(
