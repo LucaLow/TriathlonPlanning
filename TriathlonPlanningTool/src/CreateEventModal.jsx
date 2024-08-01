@@ -9,7 +9,7 @@ function CreateEventModal(props) {
   const [intensity, setIntensity] = useState(0);
   const [time, setTime] = useState(dayjs("00:00", "HH:mm"));
   const [length, setLength] = useState(dayjs("00:00", "HH:mm"));
-  const [exercistType, setExercistType] = useState("Workout");
+  const [exerciseType, setExerciseType] = useState("Workout");
   const [raceName, setRaceName] = useState("");
   const [raceType, setRaceType] = useState("");
 
@@ -43,7 +43,7 @@ function CreateEventModal(props) {
       time.format("HH:mm"),
       raceName,
       raceType,
-      exercistType
+      exerciseType
     );
     console.log(
       props.sellectedDate,
@@ -53,7 +53,7 @@ function CreateEventModal(props) {
       time.format("HH:mm"),
       raceName,
       raceType,
-      exercistType
+      exerciseType
     );
     props.onOk();
   };
@@ -73,10 +73,10 @@ function CreateEventModal(props) {
         block
         className="activitySelect"
         options={["Workout", "Race"]}
-        value={exercistType}
-        onChange={setExercistType}
+        value={exerciseType}
+        onChange={setExerciseType}
       />
-      {(exercistType == "Workout" && (
+      {(exerciseType == "Workout" && (
         <>
           <FormItem label="Activity Type">
             <Radio.Group onChange={handleActivityTypeChange}>

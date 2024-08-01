@@ -39,13 +39,14 @@ function CalendarView() {
         Authorization: `Bearer ${storedToken}`,
       },
     };
-    fetch("http://localhost:5000/GetEvent", headers)
+    fetch("http://localhost:5001/GetEvent", headers)
       .then((response) => {
         if (!response.ok) navigate("/login");
         return response.json();
       })
       .then((data) => {
         setTrainingData(data["data"]);
+        console.log(data["data"]);
       });
   }, []);
 
@@ -57,7 +58,7 @@ function CalendarView() {
     time,
     raceName,
     raceType,
-    exercistType
+    exerciseType
   ) {
     console.log(
       date,
@@ -67,9 +68,9 @@ function CalendarView() {
       time,
       raceName,
       raceType,
-      exercistType
+      exerciseType
     );
-    fetch("http://localhost:5000/CreateEvent", {
+    fetch("http://localhost:5001/CreateEvent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +84,7 @@ function CalendarView() {
         StartTime: time,
         RaceName: raceName,
         RaceType: raceType,
-        ExercistType: exercistType,
+        exerciseType: exerciseType,
       }),
     })
       .then((response) => response.json())
@@ -120,7 +121,7 @@ function CalendarView() {
   };
 
   function removeEvent(sellectedActivity) {
-    fetch("http://localhost:5000/RemoveEvent", {
+    fetch("http://localhost:5001/RemoveEvent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

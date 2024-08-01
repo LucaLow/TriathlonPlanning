@@ -50,7 +50,7 @@ function Login({ setMode, navigate, setMessage }) {
       username: username,
       password: password,
     };
-    fetch("http://localhost:5000/login", {
+    fetch("http://localhost:5001/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,7 +131,7 @@ function Signup({ setMode, navigate, setMessage }) {
       username: username,
       password: password,
     };
-    fetch("http://localhost:5000/signup", {
+    fetch("http://localhost:5001/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
